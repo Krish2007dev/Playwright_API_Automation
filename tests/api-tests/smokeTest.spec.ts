@@ -1,7 +1,8 @@
-import { test } from '../utils/fixtures';
-import { expect } from '../utils/custom-expect';
-import { createToken } from '../helpers/createToken';
-import { validateSchema } from '../utils/schema-validator';
+import { test } from '../../utils/fixtures';
+import { expect } from '../../utils/custom-expect';
+import articleRequestPayload from '../../request-objects/POST-article.json';
+import { faker } from '@faker-js/faker';
+import { getNewRandomArticle } from '../../utils/data.genrator';
 
 
 
@@ -31,19 +32,23 @@ test('Get Tag Test', async ({ api }) => {
 
 
 test('Create and Delete Article', async ({ api }) => {
+    // const articleRequest = JSON.parse(JSON.stringify(articleRequestPayload))
+    // articleRequest.article.title = "This is object title"
+
+    const articleRequest = getNewRandomArticle()
     const createArticleRespons = await api
         .path('/articles/')
-        .body({ "article": { "title": "Test732222", "description": "Test1 desc", "body": "Tetst data", "tagList": [] } })
+        .body(articleRequest)
         .postRequest(201)
     await expect(createArticleRespons).shouldMatchSchema('create_article', 'POST_tags')
-    expect(createArticleRespons.article.title).shouldEqual('Test732222');
+    expect(createArticleRespons.article.title).shouldEqual(articleRequest.article.title);
     const slugId = createArticleRespons.article.slug
 
     const articleResponse = await api
         .path('/articles')
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
-    expect(articleResponse.articles[0].title).shouldEqual('Test732222')
+    expect(articleResponse.articles[0].title).shouldEqual(articleRequest.article.title)
 
     await api
         .path(`/articles/${slugId}`)
@@ -53,30 +58,40 @@ test('Create and Delete Article', async ({ api }) => {
         .path('/articles')
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
-    expect(articleResponse2.articles[0].title).not.shouldEqual('Test732222')
+    expect(articleResponse2.articles[0].title).not.shouldEqual(articleRequest.article.title)
 
 })
 
 test('Create,Update and Delete Article', async ({ api }) => {
+    const articleTitle = faker.lorem.sentence(5)
+     const articleRequest = JSON.parse(JSON.stringify(articleRequestPayload))
+    articleRequest.article.title =  articleTitle
+
     const createArticleRespons = await api
         .path('/articles/')
-        .body({ "article": { "title": "Test732222", "description": "Test1 desc", "body": "Tetst data", "tagList": [] } })
+        .body(articleRequest)
         .postRequest(201)
-    expect(createArticleRespons.article.title).shouldEqual('Test732222');
+    expect(createArticleRespons.article.title).shouldEqual(articleTitle);
     const slugId = createArticleRespons.article.slug
+
+    
 
     const articleResponse = await api
         .path('/articles')
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
-    expect(articleResponse.articles[0].title).shouldEqual('Test732222')
+    expect(articleResponse.articles[0].title).shouldEqual(articleTitle)
+
+
+    const articleTitle2 = faker.lorem.sentence(5)
+     articleRequest.article.title = articleTitle2
 
     const updateArticleResponse = await api
 
         .path(`/articles/${slugId}`)
-        .body({ "article": { "title": "TestNew", "description": "Test1 desc", "body": "Tetst data", "tagList": [] } })
+        .body(articleRequest)
         .putRequest(200)
-    expect(updateArticleResponse.article.title).shouldEqual('TestNew');
+    expect(updateArticleResponse.article.title).shouldEqual(articleTitle2);
     const updatedSlugId = updateArticleResponse.article.slug;
 
 
@@ -89,6 +104,6 @@ test('Create,Update and Delete Article', async ({ api }) => {
         .path('/articles')
         .params({ limit: 10, offset: 0 })
         .getRequest(200)
-    expect(articleResponse2.articles[0].title).not.shouldEqual('TestNew')
+    expect(articleResponse2.articles[0].title).not.shouldEqual(articleTitle2)
 
 })

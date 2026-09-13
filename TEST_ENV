@@ -1,0 +1,4 @@
+# .env
+BASE_URL=https://staging.example.com
+ADMIN_USERNAME=testuser
+ADMIN_PASSWORD=secretpassword123

@@ -3,26 +3,30 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
   fullyParallel: false,
-  reporter: [['html'], ['list']],
+ reporter: [['html', { open: 'never' }], ['list']],
   workers: 1,
   retries: 0,
 
   use: {
 
-    trace: 'on-first-retry',
+    trace: "retain-on-failure",
   },
 
   projects: [
     {
       name: 'api-testing',
-      testMatch: 'example*',
-      dependencies: ['smoke-test'],
+      testDir: './tests/api-tests',
+      //testMatch: 'example*',
+      dependencies: [],
      
     },
 
     {
-      name: 'smoke-test',
-      testMatch: 'smoke*',
+      name: 'ui-tests',
+       testDir: './tests/ui-tests',
+       use:{
+        defaultBrowserType: 'chromium'
+       }
     },
 
   ],
