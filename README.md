@@ -62,13 +62,21 @@ npx playwright test --project=api-testing
 
 ### 4. Add your login details
 
-Create a file named `.env` in the project root. Add your own credentials:
+Copy `.env.example` to a new file named `.env` in the project root, then add your own credentials:
 
 ```dotenv
 TEST_ENV=prod
 PROD_USERNAME=your-email@example.com
 PROD_PASSWORD=your-password
 ```
+
+You can copy the file with this command:
+
+```bash
+copy .env.example .env
+```
+
+On macOS or Linux, use `cp .env.example .env` instead. `TEST_ENV=prod` requires `PROD_USERNAME` and `PROD_PASSWORD`. The `.env` file is ignored by Git, so your password stays on your computer.
 
 The tests use these values to log in and create an API token. Never commit `.env`, passwords, API tokens, or raw HAR files containing authorization headers.
 
@@ -80,12 +88,24 @@ Run the API test project:
 npx playwright test --project=api-testing
 ```
 
+The same command is available as:
+
+```bash
+npm run test:api
+```
+
 You should see the test names and pass/fail results in the terminal. Playwright also creates an HTML report after the run.
 
 Open the report with:
 
 ```bash
 npx playwright show-report
+```
+
+You can also use:
+
+```bash
+npm run report
 ```
 
 ### 6. Run one test while developing
@@ -97,6 +117,30 @@ npx playwright test tests/api-tests/harFlow.spec.ts
 ```
 
 This gives faster feedback than running the complete suite.
+
+Useful npm commands:
+
+```bash
+npm test       # Run all projects
+npm run test:api
+npm run test:ui
+npm run report
+```
+
+## If a test fails
+
+- Check that `.env` exists and contains a valid email and password.
+- Confirm that the API URL in `api-test.config.ts` is reachable.
+- Read the request and response details printed in the test output.
+- Open the HTML report for the failed test.
+- Playwright keeps a trace on failure, which can help explain what happened.
+- If a schema fails, compare the real response with the file under `response-schemas/`.
+
+## Authentication and environments
+
+API tests use the shared `api` fixture. It logs in once per worker and adds the returned token to requests automatically. Most tests do not need to manage an authorization header themselves.
+
+The selected environment comes from `TEST_ENV`. The default is `prod`, which requires the two `PROD_*` variables. Keep credentials in `.env` or CI secret variables; do not place them in test files or configuration committed to Git.
 
 ## Running tests
 
@@ -204,4 +248,4 @@ HAR files can be converted into focused request data with `har-converter.js`. Us
 
 ## CI notes
 
-Configure `PROD_USERNAME` and `PROD_PASSWORD` as protected CI secrets. Install dependencies and browsers before running `npx playwright test --project=api-testing`. Store the generated Playwright report as a CI artifact when a run completes.
+Configure `PROD_USERNAME` and `PROD_PASSWORD` as protected CI secrets. Install dependencies and browsers before running `npm run test:api`. Store the generated Playwright report as a CI artifact when a run completes.
