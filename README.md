@@ -13,22 +13,44 @@ An API-first test automation framework built with Playwright Test and TypeScript
 - HAR processing utilities and generated response schemas
 - Faker-powered test data generation
 
-## Requirements
+## First-time setup
 
-- Node.js 18 or newer
-- npm
-- Access to the Conduit API configured in `api-test.config.ts`
+Follow these steps when you use the project for the first time.
 
-## Setup
+### 1. Install the requirements
 
-Install dependencies:
+Install [Node.js 18 or newer](https://nodejs.org/). npm is included with Node.js. You also need an account that can access the Conduit API.
+
+Check that Node.js and npm are available:
+
+```bash
+node --version
+npm --version
+```
+
+### 2. Download the project
+
+Clone the repository and move into its folder:
+
+```bash
+git clone <repository-url>
+cd Playwright_API_Automation
+```
+
+### 3. Install the project packages
+
+Run these commands once:
 
 ```bash
 npm install
 npx playwright install
 ```
 
-The production configuration reads credentials from environment variables. Create a local `.env` file, or set the variables in your shell:
+The first command installs the project libraries. The second command installs the browsers used by Playwright UI tests.
+
+### 4. Add your login details
+
+Create a file named `.env` in the project root. Add your own credentials:
 
 ```dotenv
 TEST_ENV=prod
@@ -36,7 +58,33 @@ PROD_USERNAME=your-email@example.com
 PROD_PASSWORD=your-password
 ```
 
-Do not commit `.env`, API tokens, passwords, or raw HAR captures containing authorization headers.
+The tests use these values to log in and create an API token. Never commit `.env`, passwords, API tokens, or raw HAR files containing authorization headers.
+
+### 5. Run your first API test
+
+Run the API test project:
+
+```bash
+npx playwright test --project=api-testing
+```
+
+You should see the test names and pass/fail results in the terminal. Playwright also creates an HTML report after the run.
+
+Open the report with:
+
+```bash
+npx playwright show-report
+```
+
+### 6. Run one test while developing
+
+When working on a specific test, run only that file:
+
+```bash
+npx playwright test tests/api-tests/harFlow.spec.ts
+```
+
+This gives faster feedback than running the complete suite.
 
 ## Running tests
 
@@ -66,6 +114,17 @@ npx playwright show-report
 ```
 
 Failed tests retain a Playwright trace for debugging.
+
+## How to add a new API test
+
+1. Create a `.spec.ts` file in `tests/api-tests/`.
+2. Import `test` from `../../utils/fixtures` and `expect` from `../../utils/custom-expect`.
+3. Use the `api` fixture to build the request.
+4. Check the expected HTTP status in `getRequest()`, `postRequest()`, `putRequest()`, or `deleteRequest()`.
+5. Validate every response with the matching schema.
+6. Run the new file by itself, then run the full API project.
+
+For POST and PUT requests, keep reusable payloads in `request-objects/`. For example, a new article payload belongs in a file such as `request-objects/POST-article.json`.
 
 ## Example API flow
 
