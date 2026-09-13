@@ -30,10 +30,10 @@ npm --version
 
 ### 2. Download the project
 
-Clone the repository and move into its folder:
+Clone the final automation branch and move into its folder:
 
 ```bash
-git clone <repository-url>
+git clone -b final-automation-framework-api-testing https://github.com/Krish2007dev/Playwright_API_Automation.git
 cd Playwright_API_Automation
 ```
 
@@ -47,6 +47,18 @@ npx playwright install
 ```
 
 The first command installs the project libraries. The second command installs the browsers used by Playwright UI tests.
+
+### Quick start
+
+After creating `.env`, a new user can run the complete setup and API test flow with:
+
+```bash
+git clone -b final-automation-framework-api-testing https://github.com/Krish2007dev/Playwright_API_Automation.git
+cd Playwright_API_Automation
+npm install
+npx playwright install
+npx playwright test --project=api-testing
+```
 
 ### 4. Add your login details
 
